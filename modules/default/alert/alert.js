@@ -60,6 +60,15 @@ Module.register("alert", {
 			}
 		} else if (notification === "HIDE_ALERT") {
 			this.hideAlert(sender);
+		} else if (notification === "DOM_OBJECTS_CREATED") {
+			// spawn a loop in the background that sends notifications every 5 seconds
+			setInterval(() => {
+				this.notificationReceived("SHOW_ALERT", {
+					type: "notification",
+					title: "Notification Loop",
+					message: "This is a notification from the notification loop.",
+				}, this);
+			}, 1000);
 		}
 	},
 
