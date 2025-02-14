@@ -1,3 +1,7 @@
+import { init_ble } from "./wifi/init.js";
+
+init_ble();
+
 /* Config Sample
  *
  * For more information on how you can configure this file
