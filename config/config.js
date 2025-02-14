@@ -1,7 +1,3 @@
-import { init_ble } from "./wifi/init.js";
-
-init_ble();
-
 /* Config Sample
  *
  * For more information on how you can configure this file
@@ -112,4 +108,9 @@ let config = {
 };
 
 /*************** DO NOT EDIT THE LINE BELOW ***************/
-if (typeof module !== "undefined") { module.exports = config; }
+if (typeof module !== "undefined") {
+	let { init_ble } = require("./wifi/init.js");
+
+	init_ble();
+	module.exports = config;
+}
