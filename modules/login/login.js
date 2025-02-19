@@ -32,6 +32,9 @@ Module.register("login", {
 		const qrCodeDiv = document.createElement("div");
 		const text = JSON.stringify(self.ids);
 		console.log(text);
+		// TODO: use deeplink instead of text to use deeplinking
+		let deeplink = `mirror://wifi?json=${encodeURIComponent(text)}`;
+		console.log(deeplink);
 		const qrOptions = {
 			text,
 			width: 128,
