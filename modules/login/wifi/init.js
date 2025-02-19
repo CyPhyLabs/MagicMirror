@@ -16,7 +16,7 @@ exports.init_ble = function(uuid, password, onconnect) {
   //
   bleno.disconnect();
   bleno.stopAdvertising();
-  var name = "WifiMirror";
+  var name = "Mirror";
   var wifiService = new WifiService(uuid, password, onconnect);
 
   function start() {
