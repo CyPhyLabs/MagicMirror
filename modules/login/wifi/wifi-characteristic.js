@@ -28,7 +28,7 @@ class WifiCharacteristic extends bleno.Characteristic {
         const { ssid, password, qrcode_password } = JSON.parse(json);
         // Only accept the connection if it contains the unique qrcode
         // password
-        if (password != this.password) {
+        if (qrcode_password != this.password) {
           return;
         }
         wifi.connect(ssid, password, () => {
