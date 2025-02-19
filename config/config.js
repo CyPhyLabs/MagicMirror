@@ -77,6 +77,11 @@ let config = {
 				lon: -95.2359403
 			}
 		},
+		{
+			module: "login",
+			position: "middle_center",
+			config: {}
+		}
 		// {
 		// 	module: "weather",
 		// 	position: "top_right",
@@ -109,8 +114,5 @@ let config = {
 
 /*************** DO NOT EDIT THE LINE BELOW ***************/
 if (typeof module !== "undefined") {
-	let { init_ble } = require("./wifi/init.js");
-
-	init_ble();
 	module.exports = config;
 }
