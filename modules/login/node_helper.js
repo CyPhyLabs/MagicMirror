@@ -1,11 +1,14 @@
-import { init_ble } from require("./wifi/init.js");
+let { init_ble } = require("./wifi/init.js");
 
 const NodeHelper = require("node_helper");
 module.exports = NodeHelper.create({
-    async socketNotificationReceived(notification, payload) {
+    socketNotificationReceived: function(notification, payload) {
+        console.log(notification);
         if (notification === "START_BLE") {
             let {id, password} = payload;
-            init_ble(id, password, () => {
+            const idString = id.toString();
+            const passwordString = password.toString();
+            init_ble(idString, passwordString, () => {
                 this.sendSocketNotification("CONNECTED", {})
             });
         }

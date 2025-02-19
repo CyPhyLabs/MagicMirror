@@ -6,6 +6,7 @@ Module.register("login", {
 	getScripts: function() {
 		return [
 		  'qrcode.min.js', // https://github.com/davidshimjs/qrcodejs
+		  'uuid.min.js', // https://cdn.jsdelivr.net/npm/uuid/+esm
 		];
 	},
 
@@ -16,10 +17,8 @@ Module.register("login", {
 	},
 
 	generateQrCode() {
-		const rand = new Uint32Array(2);
-		self.crypto.getRandomValues(rand);
-		const id = rand[0];
-		const password = rand[1];
+		const id = uuidv4();
+		const password = uuidv4();
 		self.ids = { id, password };
 
 		this.sendSocketNotification("START_BLE", self.ids)

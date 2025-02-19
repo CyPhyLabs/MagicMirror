@@ -27,6 +27,7 @@ exports.init_ble = function(uuid, password, onconnect) {
       // so it's easier to find.
       //
       let uuid = wifiService.uuid;
+      console.log(`Advertising with UUID: ${uuid} and name: ${name}`);
       bleno.startAdvertising(name, [uuid], function (err) {
         if (err) {
           console.log(err);
