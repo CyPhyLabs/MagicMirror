@@ -61,13 +61,9 @@ Module.register("alert", {
 		} else if (notification === "HIDE_ALERT") {
 			this.hideAlert(sender);
 		} else if (notification === "DOM_OBJECTS_CREATED") {
-			// spawn a loop in the background that sends notifications every 5 seconds
+			// spawn a loop in the background that polls the backend for new messages
 			setInterval(() => {
-				this.notificationReceived("SHOW_ALERT", {
-					type: "notification",
-					title: "Notification Loop",
-					message: "This is a notification from the notification loop.",
-				}, this);
+				this.pollMessages();
 			}, 1000);
 		}
 	},
@@ -145,6 +141,51 @@ Module.register("alert", {
 		const modules = document.querySelectorAll(".module");
 		for (const module of modules) {
 			module.classList[method]("alert-blur");
+		}
+	},
+
+	pollMessages () {
+		// Message format:
+		// [
+		//		{
+		//			"message": {
+		//				"body": "This is a new message",
+		//				"title": "New Message Title",
+		//				"priority": "low",
+		//				"created_by": "85a35446-cb9a-4968-8e47-7b2d8b2b3cce",
+		//				"message_id": "6817cbbe-8158-4f4b-b6ea-1743c0e1ea7b"
+		//			},
+		//			"target_audience": "everyone"
+		//		}
+		// ]
+		fetch("http://localhost:8080/cors?url=http://localhost:8000/api/messages")
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(`HTTP error: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then((json) => {
+				this.setMessages(json);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	},
+
+	setMessages (messages) {
+		let oldMessages = 0;
+		if (this.messages) {
+			oldMessages = this.messages.length;
+		}
+		this.messages = messages;
+		for (let i = oldMessages; i < messages.length; i++) {
+			const message = messages[i];
+			this.notificationReceived("SHOW_ALERT", {
+				type: "notification",
+				title: message["message"]["title"],
+				message: message["message"]["body"],
+			}, this);
 		}
 	}
 });
