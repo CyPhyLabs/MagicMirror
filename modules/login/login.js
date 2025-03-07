@@ -19,18 +19,20 @@ Module.register("login", {
 	generateQrCode() {
 		const id = uuidv4();
 		const password = uuidv4();
-		self.ids = { id, password };
+		this.ids = { id, password };
 
-		this.sendSocketNotification("START_BLE", self.ids)
+		this.sendSocketNotification("START_BLE", this.ids)
 		this.updateDom();
 	},
 
 	getDom() {
-		if (!self.ids) {
+		if (!this.ids) {
 			return document.createElement("div");
 		}
 		const qrCodeDiv = document.createElement("div");
-		const text = JSON.stringify(self.ids);
+		let textNode = document.createTextNode("Scan the QR code with the Smart Reflect app to get started");
+		qrCodeDiv.appendChild(textNode);
+		const text = JSON.stringify(this.ids);
 		console.log(text);
 		// TODO: use deeplink instead of text to use deeplinking
 		let deeplink = `mirror://wifi?json=${encodeURIComponent(text)}`;
@@ -45,6 +47,23 @@ Module.register("login", {
 		};
 		
 		new QRCode(qrCodeDiv, qrOptions);
+		let image = qrCodeDiv.querySelector("img");
+		image.style.marginLeft = "auto";
+		image.style.marginRight = "auto";
+		image.style.textAlign = "center";
+		const thisModule = this;
+		window.onkeyup = function(e) {
+			if (e.key === "Enter") {
+				MM.getModules().enumerate(function(module) {
+					if (module == thisModule) {
+						module.hide(1000, function() {});
+					} else {
+						module.show(1000, function() {});
+					}
+				});
+			}
+		}
+		image.focus();
 
 		return qrCodeDiv
 	},

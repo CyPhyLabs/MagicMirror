@@ -40,19 +40,21 @@ let config = {
 	modules: [
 		{
 			module: "alert",
+			animateIn: "fadeIn",
+			hiddenOnStartup: true
 		},
-		// {
-		// 	module: "updatenotification",
-		// 	position: "top_bar"
-		// },
 		{
 			module: "clock",
+			animateIn: "fadeIn",
+			hiddenOnStartup: true,
 			position: "top_left"
 		},
 		{
 			module: "calendar",
+			hiddenOnStartup: true,
 			header: "Event Calendar",
 			position: "bottom_right",
+			animateIn: "fadeIn",
 			config: {
 				calendars: [
 					{
@@ -63,52 +65,22 @@ let config = {
 				]
 			}
 		},
-		// {
-		// 	module: "compliments",
-		// 	position: "lower_third"
-		// },
 		{
 			module: "weather",
+			hiddenOnStartup: true,
 			position: "top_right",
+			animateIn: "fadeIn",
 			config: {
 				weatherProvider: "openmeteo",
-				type: "current",// TODO get the current location with navigator.geolocation.getCurrentPosition(success, error);
-				lat: 38.9719137,
-				lon: -95.2359403
+				type: "current"
 			}
 		},
 		{
 			module: "login",
 			position: "middle_center",
+			animateIn: "fadeIn",
 			config: {}
 		}
-		// {
-		// 	module: "weather",
-		// 	position: "top_right",
-		// 	header: "Weather Forecast",
-		// 	config: {
-		// 		weatherProvider: "openmeteo",
-		// 		type: "forecast",
-		// 		lat: 40.776676,
-		// 		lon: -73.971321
-		// 	}
-		// },
-		// {
-		// 	module: "newsfeed",
-		// 	position: "bottom_bar",
-		// 	config: {
-		// 		feeds: [
-		// 			{
-		// 				title: "New York Times",
-		// 				url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
-		// 			}
-		// 		],
-		// 		showSourceTitle: true,
-		// 		showPublishDate: true,
-		// 		broadcastNewsFeeds: true,
-		// 		broadcastNewsUpdates: true
-		// 	}
-		// },
 	]
 };
 
