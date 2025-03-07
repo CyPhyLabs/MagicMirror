@@ -41,13 +41,14 @@ let config = {
 		{
 			module: "alert",
 			animateIn: "fadeIn",
+			display_time: 10000000,
 			hiddenOnStartup: true
 		},
 		{
 			module: "clock",
 			animateIn: "fadeIn",
 			hiddenOnStartup: true,
-			position: "top_left"
+			position: "bottom_left"
 		},
 		{
 			module: "calendar",
@@ -72,7 +73,9 @@ let config = {
 			animateIn: "fadeIn",
 			config: {
 				weatherProvider: "openmeteo",
-				type: "current"
+				type: "current",// TODO get the current location with navigator.geolocation.getCurrentPosition(success, error);
+				lat: 38.9719137,
+				lon: -95.2359403
 			}
 		},
 		{

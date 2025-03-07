@@ -54,13 +54,7 @@ Module.register("login", {
 		const thisModule = this;
 		window.onkeyup = function(e) {
 			if (e.key === "Enter") {
-				MM.getModules().enumerate(function(module) {
-					if (module == thisModule) {
-						module.hide(1000, function() {});
-					} else {
-						module.show(1000, function() {});
-					}
-				});
+				thisModule.connceted();
 			}
 		}
 		image.focus();
@@ -68,10 +62,22 @@ Module.register("login", {
 		return qrCodeDiv
 	},
 
+	connceted() {
+		const thisModule = this;
+		MM.getModules().enumerate(function(module) {
+			if (module == thisModule) {
+				module.hide(1000, function() {});
+			} else {
+				module.show(1000, function() {});
+			}
+		});
+	},
+
 	notificationReceived(notification, payload) {
 		if (notification === "CONNECTED") {
 		  this.ids = null;
-		  this.updateDom()
+		  this.updateDom();
+		  this.connceted();
 		}
 	  }
 });
