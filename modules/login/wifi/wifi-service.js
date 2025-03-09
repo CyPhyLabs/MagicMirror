@@ -3,11 +3,11 @@ const bleno = require("@abandonware/bleno");
 const WifiCharacteristic = require("./wifi-characteristic");
 
 class WifiService extends bleno.PrimaryService {
-  constructor(uuid, password, onconnect) {
+  constructor(config) {
     super({
-      uuid,
+      uuid: "1337",
       characteristics: [
-        new WifiCharacteristic(uuid, password, onconnect),
+        new WifiCharacteristic(config),
       ],
     });
   }

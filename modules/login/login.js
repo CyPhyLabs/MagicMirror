@@ -17,9 +17,8 @@ Module.register("login", {
 	},
 
 	generateQrCode() {
-		const id = uuidv4();
 		const password = uuidv4();
-		this.ids = { id, password };
+		this.ids = { id: "1337", password };
 
 		this.sendSocketNotification("START_BLE", this.ids)
 		this.updateDom();

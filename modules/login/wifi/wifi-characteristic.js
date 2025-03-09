@@ -2,9 +2,9 @@ const bleno = require("@abandonware/bleno");
 const wifi = require("./wifi");
 
 class WifiCharacteristic extends bleno.Characteristic {
-  constructor(uuid, password, onconnect) {
+  constructor(config) {
     super({
-      uuid,
+      uuid: "1333",
       properties: ["write"],
       descriptors: [
         new bleno.Descriptor({
@@ -13,28 +13,28 @@ class WifiCharacteristic extends bleno.Characteristic {
         }),
       ],
     });
-    this.password = password;
-    this.onconnect = onconnect;
+    this.config = config;
   }
 
   onWriteRequest(data, offset, withoutResponse, callback) {
+    console.log("BLE received data!");
     if (offset) {
       callback(this.RESULT_ATTR_NOT_LONG);
-    } else if (data.length !== 1) {
-      callback(this.RESULT_INVALID_ATTRIBUTE_LENGTH);
     } else {
       try {
+        console.log(`BLE received data: ${data}!`); 
         const json = data.toString("utf-8");
+        console.log(`BLE received json: ${json}!`); 
         const { ssid, password, qrcode_password, token } = JSON.parse(json);
         // Only accept the connection if it contains the unique qrcode
         // password
-        if (qrcode_password != this.password) {
+        if (qrcode_password != this.config.password) {
           return;
         }
         console.log(`token to connect to authenticate with backend: ${token}`);
         wifi.connect(ssid, password, () => {
           callback(this.RESULT_SUCCESS);
-          this.onconnect();
+          this.config.onconnect();
         });
       } catch (e) {
         console.error(e);

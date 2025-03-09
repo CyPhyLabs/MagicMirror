@@ -5,10 +5,9 @@ module.exports = NodeHelper.create({
     socketNotificationReceived: function(notification, payload) {
         console.log(notification);
         if (notification === "START_BLE") {
-            let {id, password} = payload;
-            const idString = id.toString();
+            let {password} = payload;
             const passwordString = password.toString();
-            init_ble(idString, passwordString, () => {
+            init_ble(passwordString, () => {
                 this.sendSocketNotification("CONNECTED", {})
             });
         }

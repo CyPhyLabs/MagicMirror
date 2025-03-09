@@ -8,16 +8,22 @@ var bleno = require("@abandonware/bleno");
 // The BLE wifi Service!
 //
 var WifiService = require("./wifi-service");
-var bleInitialized = false;
+var config = null;
 
-exports.init_ble = function(uuid, password, onconnect) {
+exports.init_ble = function(password, onconnect) {
+  if (config) {
+    config.password = password;
+    config.onconnect = onconnect;
+    return;
+  }
   //
   // A name to advertise our wifi Service.
   //
   bleno.disconnect();
   bleno.stopAdvertising();
   var name = "Mirror";
-  var wifiService = new WifiService(uuid, password, onconnect);
+  config = { password, onconnect };
+  var wifiService = new WifiService(config);
 
   function start() {
     let uuid = wifiService.uuid;
@@ -27,10 +33,6 @@ exports.init_ble = function(uuid, password, onconnect) {
         console.log(err);
       }
     });
-  }
-
-  if (bleInitialized) {
-    start();
   }
 
   //
@@ -46,6 +48,7 @@ exports.init_ble = function(uuid, password, onconnect) {
       bleInitialized = true;
       start();
     } else {
+      console.log(`Stopping advertising due to state: ${state}`);
       bleno.stopAdvertising();
     }
   });
