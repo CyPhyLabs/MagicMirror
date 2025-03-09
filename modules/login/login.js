@@ -30,7 +30,9 @@ Module.register("login", {
 			return document.createElement("div");
 		}
 		const qrCodeDiv = document.createElement("div");
-		let textNode = document.createTextNode("Scan the QR code with the Smart Reflect app to get started");
+		const textNode = document.createElement("pre");
+		let textContents = document.createTextNode("Scan the QR code below\nwith the Smart Reflect app\nto get started");
+		textNode.appendChild(textContents);
 		qrCodeDiv.appendChild(textNode);
 		const text = JSON.stringify(this.ids);
 		console.log(text);
