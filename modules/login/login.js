@@ -13,12 +13,18 @@ Module.register("login", {
 	async start () {
 		Log.info(`Starting module: ${this.name}`);
 		this.generateQrCode();
-		setInterval(() => this.generateQrCode(), 60000);
+		setInterval(() => this.generateQrCode(), 6000);
 	},
 
 	generateQrCode() {
 		const password = uuidv4();
-		let id = uuidv4();
+		let id = null;
+		if (this.ids) {
+			id = this.ids.id;
+		}
+		if (id == null) {
+			id = uuidv4();
+		}
 		this.ids = { id, password };
 
 		this.sendSocketNotification("START_BLE", this.ids)
