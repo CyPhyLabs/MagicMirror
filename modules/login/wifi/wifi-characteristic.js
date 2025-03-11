@@ -4,7 +4,7 @@ const wifi = require("./wifi");
 class WifiCharacteristic extends bleno.Characteristic {
   constructor(config) {
     super({
-      uuid: "1333",
+      uuid: "E9F04999-ADED-4C4A-80E2-C00B7EED30A0",
       properties: ["write"],
       descriptors: [
         new bleno.Descriptor({
