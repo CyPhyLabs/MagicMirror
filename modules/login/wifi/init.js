@@ -10,7 +10,7 @@ var bleno = require("@abandonware/bleno");
 var WifiService = require("./wifi-service");
 var config = null;
 
-exports.init_ble = function(password, onconnect) {
+exports.init_ble = function(uuid, password, onconnect) {
   if (config) {
     config.password = password;
     config.onconnect = onconnect;
@@ -23,7 +23,7 @@ exports.init_ble = function(password, onconnect) {
   bleno.stopAdvertising();
   var name = "Mirror";
   config = { password, onconnect };
-  var wifiService = new WifiService(config);
+  var wifiService = new WifiService(uuid, config);
 
   function start() {
     let uuid = wifiService.uuid;
