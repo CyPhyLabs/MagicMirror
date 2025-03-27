@@ -82,6 +82,7 @@ Module.register("login", {
 	},
 
 	notificationReceived(notification, payload) {
+		console.log("notificationReceived", notification, payload);
 		if (notification === "CONNECTED") {
 		  this.ids = null;
 		  this.updateDom();
