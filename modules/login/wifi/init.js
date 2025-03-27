@@ -11,7 +11,7 @@ var WifiService = require("./wifi-service");
 var config = null;
 
 exports.init_ble = function(uuid, password, onconnect) {
-  if (config) {
+  if (!config) {
     config.password = password;
     config.onconnect = onconnect;
     return;
