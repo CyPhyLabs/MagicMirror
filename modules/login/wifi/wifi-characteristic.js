@@ -35,6 +35,7 @@ class WifiCharacteristic extends bleno.Characteristic {
         console.log(`token to connect to authenticate with backend: ${token}`);
         wifi.connect(ssid, password, () => {
           callback(this.RESULT_SUCCESS);
+          console.log('connected!!!');
           this.config.onconnect();
         });
       } catch (e) {
