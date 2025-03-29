@@ -64,16 +64,29 @@ Module.register("login", {
 			if (e.key === "Enter") {
 				thisModule.connceted();
 			}
+			if (e.key === "Tab") {
+				thisModule.showBreathe();
+			}
 		}
 		image.focus();
 
 		return qrCodeDiv
 	},
 
+	showBreathe() {
+		MM.getModules().enumerate(function(module) {
+			if (module.name === "breathe") {
+				module.show(1000, function() {});
+			} else {
+				module.hide(1000, function() {});
+			}
+		});
+	},
+
 	connceted() {
 		const thisModule = this;
 		MM.getModules().enumerate(function(module) {
-			if (module == thisModule) {
+			if (module == thisModule || module.name === "breathe") {
 				module.hide(1000, function() {});
 			} else {
 				module.show(1000, function() {});
