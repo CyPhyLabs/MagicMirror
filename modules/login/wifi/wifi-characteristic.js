@@ -29,11 +29,13 @@ class WifiCharacteristic extends bleno.Characteristic {
         // Only accept the connection if it contains the unique qrcode
         // password
         if (qrcode_password != this.config.password) {
+          console.log("qrcode_password does not match");
           return;
         }
         console.log(`token to connect to authenticate with backend: ${token}`);
         wifi.connect(ssid, password, () => {
           callback(this.RESULT_SUCCESS);
+          console.log('connected!!!');
           this.config.onconnect();
         });
       } catch (e) {

@@ -79,6 +79,13 @@ let config = {
 			}
 		},
 		{
+			module: "breathe",
+			hiddenOnStartup: true,
+			position: "middle_center",
+			animateIn: "fadeIn",
+			config: {}
+		},
+		{
 			module: "login",
 			position: "middle_center",
 			animateIn: "fadeIn",

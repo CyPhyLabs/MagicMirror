@@ -13,7 +13,7 @@ Module.register("login", {
 	async start () {
 		Log.info(`Starting module: ${this.name}`);
 		this.generateQrCode();
-		setInterval(() => this.generateQrCode(), 6000);
+		setInterval(() => this.generateQrCode(), 60000);
 	},
 
 	generateQrCode() {
@@ -64,16 +64,29 @@ Module.register("login", {
 			if (e.key === "Enter") {
 				thisModule.connceted();
 			}
+			if (e.key === "Tab") {
+				thisModule.showBreathe();
+			}
 		}
 		image.focus();
 
 		return qrCodeDiv
 	},
 
+	showBreathe() {
+		MM.getModules().enumerate(function(module) {
+			if (module.name === "breathe") {
+				module.show(1000, function() {});
+			} else {
+				module.hide(1000, function() {});
+			}
+		});
+	},
+
 	connceted() {
 		const thisModule = this;
 		MM.getModules().enumerate(function(module) {
-			if (module == thisModule) {
+			if (module == thisModule || module.name === "breathe") {
 				module.hide(1000, function() {});
 			} else {
 				module.show(1000, function() {});
@@ -81,7 +94,8 @@ Module.register("login", {
 		});
 	},
 
-	notificationReceived(notification, payload) {
+	socketNotificationReceived(notification, payload) {
+		console.log("notificationReceived", notification, payload);
 		if (notification === "CONNECTED") {
 		  this.ids = null;
 		  this.updateDom();
