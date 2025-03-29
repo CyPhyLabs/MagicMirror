@@ -81,7 +81,7 @@ Module.register("login", {
 		});
 	},
 
-	notificationReceived(notification, payload) {
+	socketNotificationReceived(notification, payload) {
 		console.log("notificationReceived", notification, payload);
 		if (notification === "CONNECTED") {
 		  this.ids = null;
