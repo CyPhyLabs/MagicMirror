@@ -74,8 +74,9 @@ Module.register("login", {
 	},
 
 	showBreathe() {
+		this.sendNotification("SCREEN_CHANGE", 1);
 		MM.getModules().enumerate(function(module) {
-			if (module.name === "breathe") {
+			if (module.name === "breathe" || module.name === "screen") {
 				module.show(1000, function() {});
 			} else {
 				module.hide(1000, function() {});
@@ -84,6 +85,7 @@ Module.register("login", {
 	},
 
 	connceted() {
+		this.sendNotification("SCREEN_CHANGE", 0);
 		const thisModule = this;
 		MM.getModules().enumerate(function(module) {
 			if (module == thisModule || module.name === "breathe") {
