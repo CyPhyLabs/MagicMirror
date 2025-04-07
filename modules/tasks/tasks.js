@@ -1,11 +1,22 @@
 Module.register("tasks", {
 	defaults: {},
-  tasks: [{
-    title: "Water plants",
-    completion: [false, false, true],
-  }],
+  
 
   start () {
+    this.tasks = [
+      {
+        title: "Water plants",
+        completion: [false, false, true],
+      },
+      {
+        title: "Take pills",
+        completion: [true, true, true],
+      },
+      {
+        title: "Walk for 15 minutes",
+        completion: [true, false, true],
+      },
+    ];
     this.updateDom();
 	},
 
@@ -43,5 +54,9 @@ Module.register("tasks", {
 		return main;
 	},
 
-  notificationReceived: function(notification, payload, sender) {}
+  notificationReceived: function(notification, payload, sender) {
+    if (notification === "UPDATE_TASKS") {
+      this.tasks = payload;
+    }
+  }
 });
