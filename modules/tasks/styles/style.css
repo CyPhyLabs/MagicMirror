@@ -1,0 +1,51 @@
+.task-box {
+  border-bottom: solid;
+  border-right: solid;
+  border-left: solid;
+  border-image: linear-gradient(0deg, white, black) 10;
+  padding: 10px;
+  border-end-end-radius: 2em;
+  border-end-start-radius: 2em;
+  margin: 0;
+}
+
+.task-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-circle {
+  border: solid;
+  border-radius: 100%;
+  width: 15px;
+  height: 15px;
+  margin: 5px;
+}
+
+.task-day {
+  width: 15px;
+  height: 15px;
+  margin: 6.5px;
+  text-align: center;
+}
+
+.task-circle-filled {
+  background: green;
+}
+
+.task-circle-wip {
+  background: repeating-linear-gradient(-45deg, white, white 2px, black 2px, black 5px);
+}
+
+.task-circle-incomplete {
+  background: repeating-linear-gradient(0deg, red, red 5px, white 5px, white 10px);
+}

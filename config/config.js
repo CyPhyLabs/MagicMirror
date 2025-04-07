@@ -86,6 +86,20 @@ let config = {
 			config: {}
 		},
 		{
+			module: "screen",
+			hiddenOnStartup: true,
+			position: "bottom_center",
+			animateIn: "fadeIn",
+			config: {}
+		},
+		{
+			module: "tasks",
+			hiddenOnStartup: true,
+			position: "top_center",
+			animateIn: "fadeIn",
+			config: {}
+		},
+		{
 			module: "login",
 			position: "middle_center",
 			animateIn: "fadeIn",
