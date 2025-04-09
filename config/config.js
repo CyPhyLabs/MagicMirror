@@ -86,6 +86,13 @@ let config = {
 			config: {}
 		},
 		{
+			module: "fullscreencalendar",
+			hiddenOnStartup: true,
+			position: "middle_center",
+			animateIn: "fadeIn",
+			config: {}
+		},
+		{
 			module: "screen",
 			hiddenOnStartup: true,
 			position: "bottom_center",

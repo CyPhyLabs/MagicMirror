@@ -19,7 +19,7 @@ Module.register("screen", {
 	getDom() {
 		const main = document.createElement("div");
     let children = "";
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 3; i++) {
       if (i == this.active_screen) {
         children += `<div id="selected-circle"></div>`;
       } else {

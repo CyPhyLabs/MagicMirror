@@ -67,10 +67,24 @@ Module.register("login", {
 			if (e.key === "Tab") {
 				thisModule.showBreathe();
 			}
+			if (e.key === "Shift") {
+				thisModule.showCalendar();
+			}
 		}
 		image.focus();
 
 		return qrCodeDiv
+	},
+
+	showCalendar() {
+		this.sendNotification("SCREEN_CHANGE", 2);
+		MM.getModules().enumerate(function(module) {
+			if (module.name === "fullscreencalendar" || module.name === "screen") {
+				module.show(1000, function() {});
+			} else {
+				module.hide(1000, function() {});
+			}
+		});
 	},
 
 	showBreathe() {
@@ -88,7 +102,7 @@ Module.register("login", {
 		this.sendNotification("SCREEN_CHANGE", 0);
 		const thisModule = this;
 		MM.getModules().enumerate(function(module) {
-			if (module == thisModule || module.name === "breathe") {
+			if (module == thisModule || module.name === "breathe" || module.name === "fullscreencalendar") {
 				module.hide(1000, function() {});
 			} else {
 				module.show(1000, function() {});
