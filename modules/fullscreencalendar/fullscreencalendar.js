@@ -3,9 +3,7 @@ Module.register("fullscreencalendar", {
   events: [],
 
   start () {
-    this.events = [
-      [{title: "Team Meeting 2pm"}],
-    ];
+    this.events = [];
     this.updateDom();
 	},
 
@@ -28,14 +26,16 @@ Module.register("fullscreencalendar", {
       children+=`<div class="day other-month"><div class="day-number">${previousDay}</div></div>`
     }
     for (let day = 0; day < 30; day++) {
-      if (day == currentDay) {
+      if (day + 1 == currentDay) {
         children += `<div class="day today"><div style="display: flex; flex-direction: row"><span class="day-label">Today</span><div class="day-number">${day+1}</div></div>`;
       }else {
         children += `<div class="day"><div class="day-number">${day+1}</div>`;
       }
       const events = this.events[day];
       if (events) {
-        for (const event of events) {
+        const eventCount = Math.min(events.length, 2);
+        for (let i = 0; i < eventCount; i++) {
+          const event = events[i];
           children += `<div class="event">${event.title}</div>`;
         }
       }
@@ -53,6 +53,38 @@ Module.register("fullscreencalendar", {
   notificationReceived: function(notification, payload, sender) {
     if (notification === "UPDATE_EVENTS") {
       this.events = payload;
+      this.updateDom();
+    } else if (notification == "CALENDAR_EVENTS") {
+      // color, title, startDate, endDate
+      this.events = [];
+      console.log("raw events:", payload);
+      for (const event of payload) {
+        const startDate = new Date(parseInt(event.startDate));
+        const endDate = new Date(parseInt(event.endDate - 1));
+        const startDay = startDate.getDate();
+        const endDay = endDate.getDate();
+
+        // Check if the event is in the current month
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        const startMonth = startDate.getMonth();
+        const startYear = startDate.getFullYear();
+        if (startMonth !== currentMonth || startYear !== currentYear) {
+          console.log("Skipping event:", event.title, "not in current month");
+          continue; // Skip events not in the current month
+        }
+        
+        for (let i = startDay; i <= endDay; i++) {
+          let index = i - 1;
+          if (!this.events[index]) {
+            this.events[index] = [];
+          }
+          this.events[index].push({title: event.title, color: event.color});
+        }
+      }
+      console.log("Calendar events received:", this.events);
+      this.updateDom();
     }
   }
 });

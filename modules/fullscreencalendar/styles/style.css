@@ -7,7 +7,7 @@
 }
 
 .calendar-header {
-  background-color: rgb(72 72 72);
+  background-color: rgb(125 125 125);
   color: black;
   padding: 15px;
   text-align: center;
@@ -68,9 +68,7 @@
 
 .today {
   font-weight: bold;
-  border: 2px solid white;
-  box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  box-sizing: border-box; /* Firefox, other Gecko */
+  border: 2px solid white; /* Safari/Chrome, other WebKit */ /* Firefox, other Gecko */
   box-sizing: border-box; /* Opera/IE 8+ */
   width: 100%;
   height: 100%;
@@ -81,6 +79,7 @@
   padding: 2px 4px;
   margin-top: 2px;
   border-radius: 3px;
+  width: calc(60vw / 7);
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
