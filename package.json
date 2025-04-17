@@ -56,11 +56,6 @@
 		"test:spelling": "cspell . --gitignore",
 		"test:unit": "NODE_ENV=test jest --selectProjects unit"
 	},
-	"lint-staged": {
-		"*": "prettier --write",
-		"*.js": "eslint --fix",
-		"*.css": "stylelint --fix"
-	},
 	"dependencies": {
 		"@abandonware/bleno": "^0.6.2",
 		"ajv": "^8.17.1",

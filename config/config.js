@@ -75,7 +75,7 @@ let config = {
 			animateIn: "fadeIn",
 			config: {
 				weatherProvider: "openmeteo",
-				type: "current",// TODO get the current location with navigator.geolocation.getCurrentPosition(success, error);
+				type: "current",
 				lat: 38.9719137,
 				lon: -95.2359403
 			}

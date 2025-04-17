@@ -71,31 +71,51 @@ Module.register("weather", {
 
 	// Start the weather module.
 	start () {
-		moment.locale(this.config.lang);
+		fetch("/cors?url=http://jsonip.com")
+			.then((response) => response.json())
+			.then((data) => {
+				let ip = data.ip;
+				fetch(`/cors?url=https://get.geojs.io/v1/ip/geo/${ip}.json`)
+				.then((response) => response.json())
+				.then((position) => {
+				console.log("Geolocation position: ", position);	
+				this.config.latitude = position.latitude;
+				this.config.longitude = position.longitude;
 
-		if (this.config.useKmh) {
-			Log.warn("Your are using the deprecated config values 'useKmh'. Please switch to windUnits!");
-			this.windUnits = "kmh";
-		} else if (this.config.useBeaufort) {
-			Log.warn("Your are using the deprecated config values 'useBeaufort'. Please switch to windUnits!");
-			this.windUnits = "beaufort";
-		}
-		if (typeof this.config.showHumidity === "boolean") {
-			Log.warn("[weather] Deprecation warning: Please consider updating showHumidity to the new style (config string).");
-			this.config.showHumidity = this.config.showHumidity ? "wind" : "none";
-		}
+				moment.locale(this.config.lang);
 
-		// Initialize the weather provider.
-		this.weatherProvider = WeatherProvider.initialize(this.config.weatherProvider, this);
+				if (this.config.useKmh) {
+					Log.warn("Your are using the deprecated config values 'useKmh'. Please switch to windUnits!");
+					this.windUnits = "kmh";
+				} else if (this.config.useBeaufort) {
+					Log.warn("Your are using the deprecated config values 'useBeaufort'. Please switch to windUnits!");
+					this.windUnits = "beaufort";
+				}
+				if (typeof this.config.showHumidity === "boolean") {
+					Log.warn("[weather] Deprecation warning: Please consider updating showHumidity to the new style (config string).");
+					this.config.showHumidity = this.config.showHumidity ? "wind" : "none";
+				}
 
-		// Let the weather provider know we are starting.
-		this.weatherProvider.start();
+				// Initialize the weather provider.
+				this.weatherProvider = WeatherProvider.initialize(this.config.weatherProvider, this);
 
-		// Add custom filters
-		this.addFilters();
+				// Let the weather provider know we are starting.
+				this.weatherProvider.start();
 
-		// Schedule the first update.
-		this.scheduleUpdate(this.config.initialLoadDelay);
+				// Add custom filters
+				this.addFilters();
+
+				// Schedule the first update.
+				this.scheduleUpdate(this.config.initialLoadDelay);
+			}, (error) => {
+				console.error("Error getting geolocation: ", error);
+			},
+			{
+				enableHighAccuracy: false,
+				timeout: 50000,
+				maximumAge: 0
+			});
+		});
 	},
 
 	// Override notification handler.
@@ -141,6 +161,9 @@ Module.register("weather", {
 
 	// Add all the data to the template.
 	getTemplateData () {
+		if (!this.weatherProvider) {
+			return {}
+		}
 		const currentData = this.weatherProvider.currentWeather();
 		const forecastData = this.weatherProvider.weatherForecast();
 
