@@ -125,61 +125,7 @@ Module.register("calendar", {
 
 		if (notification === "SET_TOKEN") {
 			this.token = payload.token;
-			const KEY = this.token;
-
-			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/`)
-			.then(response => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.then(data => {
-				console.log("Got calendar JSON", data);
-				this.calendars = data.map(calendar => {
-					return {
-						id: calendar.id,
-						calendar_id: calendar.calendar_id,
-						name: calendar.name,
-					};
-				});
-
-				// Get the events for each calendar
-				for (let i = 0; i < this.calendars.length; i++) {
-					const calendar = this.calendars[i];
-					console.log("Calendar:", calendar);
-					let query_encoded_calendar_id = encodeURIComponent(calendar.calendar_id);
-					// let start = "2024-05-01T00:00:00";
-					// let end = "2025-05-10T00:00:00";
-					let today = new Date();
-					let last_month = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-					let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
-					let start = last_month.toISOString().slice(0, 10);
-					let end = next_month.toISOString().slice(0, 10);
-					fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-							"Authorization": `Bearer ${KEY}`
-						}
-					})
-					.then(response => {
-						if (!response.ok) {
-							throw new Error(`HTTP error! Status: ${response.status}`);
-						}
-						return response.json();
-					})
-					.then(events => {
-						this.calendars[i].events = events;
-						this.updateDom();
-						if (this.config.broadcastEvents) {
-							this.broadcastEvents();
-						}
-					})
-					.catch(error => console.error("Error fetching calendar events:", error));
-				}
-			})
-			.catch(error => console.error("Error fetching calendar communities:", error));
+			this.fetchCalendars();
 		}
 	},
 
@@ -917,6 +863,7 @@ Module.register("calendar", {
 			() => {
 				setInterval(() => {
 					Log.debug("[Calendar] self update");
+					this.fetchCalendars();
 					if (this.config.updateOnFetch) {
 						this.updateDom(1);
 					} else {
@@ -926,5 +873,119 @@ Module.register("calendar", {
 			},
 			ONE_MINUTE - (new Date() % ONE_MINUTE)
 		);
+	},
+
+	fetchCalendars() {
+		const KEY = this.token;
+		if (!KEY) {
+			return;
+		}
+
+			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Got calendar JSON", data);
+					this.calendars = data.map(calendar => {
+						return {
+							id: calendar.id,
+							calendar_id: calendar.calendar_id,
+							name: calendar.name,
+						};
+					});
+
+					// Get the events for each calendar
+					for (let i = 0; i < this.calendars.length; i++) {
+						const calendar = this.calendars[i];
+						console.log("Calendar:", calendar);
+						let query_encoded_calendar_id = encodeURIComponent(calendar.calendar_id);
+						// let start = "2024-05-01T00:00:00";
+						// let end = "2025-05-10T00:00:00";
+						let today = new Date();
+						let last_month = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+						let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
+						let start = last_month.toISOString().slice(0, 10);
+						let end = next_month.toISOString().slice(0, 10);
+						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
+							method: "GET",
+							headers: {
+								"Content-Type": "application/json",
+								"Authorization": `Bearer ${KEY}`
+							}
+						})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error(`HTTP error! Status: ${response.status}`);
+							}
+							return response.json();
+						})
+						.then(events => {
+							this.calendars[i].events = events;
+							this.updateDom();
+							if (this.config.broadcastEvents) {
+								this.broadcastEvents();
+							}
+						})
+						.catch(error => console.error("Error fetching calendar events:", error));
+					}
+				})
+				.catch(error => console.error("Error fetching calendar communities:", error));
+			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/personal/`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Got calendar JSON", data);
+					this.calendars = data.map(calendar => {
+						return {
+							id: calendar.id,
+							calendar_id: calendar.calendar_id,
+							name: calendar.name,
+						};
+					});
+
+					// Get the events for each calendar
+					for (let i = 0; i < this.calendars.length; i++) {
+						const calendar = this.calendars[i];
+						console.log("Calendar:", calendar);
+						let query_encoded_calendar_id = encodeURIComponent(calendar.calendar_id);
+						// let start = "2024-05-01T00:00:00";
+						// let end = "2025-05-10T00:00:00";
+						let today = new Date();
+						let last_month = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+						let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
+						let start = last_month.toISOString().slice(0, 10);
+						let end = next_month.toISOString().slice(0, 10);
+						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/personal/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
+							method: "GET",
+							headers: {
+								"Content-Type": "application/json",
+								"Authorization": `Bearer ${KEY}`
+							}
+						})
+						.then(response => {
+							if (!response.ok) {
+								throw new Error(`HTTP error! Status: ${response.status}`);
+							}
+							return response.json();
+						})
+						.then(events => {
+							this.calendars[i].events = events;
+							this.updateDom();
+							if (this.config.broadcastEvents) {
+								this.broadcastEvents();
+							}
+						})
+						.catch(error => console.error("Error fetching calendar events:", error));
+					}
+				})
+				.catch(error => console.error("Error fetching calendar communities:", error));
 	}
 });

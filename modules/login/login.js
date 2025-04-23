@@ -62,7 +62,7 @@ Module.register("login", {
 		const thisModule = this;
 		window.onkeyup = function(e) {
 			if (e.key === "Enter") {
-				let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDM2MDA0LCJpYXQiOjE3NDU0MzI0MDQsImp0aSI6IjIyNDUzMDQyZTc4YzRlNzJiYWQ0ODc2Mzc5ZGQ2MGFkIiwidXNlcl9pZCI6ImE0MDUxMGUwLWNlYjYtNDk1Ny05OTc5LWQ1ZjIxZWMzMTRkZSJ9.comVMcl2N3iicor-Tf86ZaFHSXeNaZQDCVOdYr6GEl4";
+				let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDM2OTYxLCJpYXQiOjE3NDU0MzMzNjEsImp0aSI6IjhjZDc4NjQxMjJmYjRkMWVhMTkwODg0MWY1NGQ4OGVmIiwidXNlcl9pZCI6IjVmYWI5YjFkLTEzOGEtNGQxMC04ZWVjLWEwNzEzYTlmZjRhOSJ9.SIsnMr5xX6QrSP9SgXWDJvdK4WA1QVOUPMQInPzB7Yc";
 				thisModule.sendNotification("SET_TOKEN", { token });
 				thisModule.connceted();
 			}
