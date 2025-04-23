@@ -72,6 +72,8 @@ Module.register("fullscreencalendar", {
         const startYear = startDate.getFullYear();
         if (startMonth !== currentMonth || startYear !== currentYear) {
           console.log("Skipping event:", event.title, "not in current month");
+          console.log("startMonth:", startMonth, "currentMonth:", currentMonth);
+          console.log("startYear:", startYear, "currentYear:", currentYear);
           continue; // Skip events not in the current month
         }
         

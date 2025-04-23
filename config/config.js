@@ -62,8 +62,6 @@ let config = {
 						broadcastPastEvents: true,
 						fetchInterval: 7 * 24 * 60 * 60 * 1000,
 						maximumEntries: 1000,
-						symbol: "calendar-check",
-						url: "https://calendar.google.com/calendar/ical/evanalmloff%40gmail.com/private-8cbf99452967f5149744752d5becd668/basic.ics"
 					}
 				]
 			}

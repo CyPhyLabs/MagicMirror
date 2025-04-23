@@ -81,6 +81,7 @@ function getHeadersToSend (url) {
 			headersToSend[keyValue[0]] = decodeURIComponent(keyValue[1]);
 		}
 	}
+	console.log(headersToSend);
 	return headersToSend;
 }
 

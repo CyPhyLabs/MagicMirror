@@ -39,12 +39,7 @@ Module.register("calendar", {
 		colored: false,
 		forceUseCurrentTime: false,
 		tableClass: "small",
-		calendars: [
-			{
-				symbol: "calendar-alt",
-				url: "https://www.calendarlabs.com/templates/ical/US-Holidays.ics"
-			}
-		],
+		calendars: [],
 		customEvents: [
 			// Array of {keyword: "", symbol: "", color: "", eventClass: ""} where Keyword is a regexp and symbol/color/eventClass are to be applied for matched
 			{ keyword: ".*", transform: { search: "De verjaardag van ", replace: "" } },
@@ -118,68 +113,78 @@ Module.register("calendar", {
 		// data holder of calendar url. Avoid fade out/in on updateDom (one for each calendar update)
 		this.calendarDisplayer = {};
 
-		this.config.calendars.forEach((calendar) => {
-			calendar.url = calendar.url.replace("webcal://", "http://");
-
-			const calendarConfig = {
-				maximumEntries: calendar.maximumEntries,
-				maximumNumberOfDays: calendar.maximumNumberOfDays,
-				pastDaysCount: calendar.pastDaysCount,
-				broadcastPastEvents: calendar.broadcastPastEvents,
-				selfSignedCert: calendar.selfSignedCert,
-				excludedEvents: calendar.excludedEvents,
-				fetchInterval: calendar.fetchInterval
-			};
-
-			if (typeof calendar.symbolClass === "undefined" || calendar.symbolClass === null) {
-				calendarConfig.symbolClass = "";
-			}
-			if (typeof calendar.titleClass === "undefined" || calendar.titleClass === null) {
-				calendarConfig.titleClass = "";
-			}
-			if (typeof calendar.timeClass === "undefined" || calendar.timeClass === null) {
-				calendarConfig.timeClass = "";
-			}
-
-			// we check user and password here for backwards compatibility with old configs
-			if (calendar.user && calendar.pass) {
-				Log.warn("Deprecation warning: Please update your calendar authentication configuration.");
-				Log.warn("https://docs.magicmirror.builders/modules/calendar.html#configuration-options");
-				calendar.auth = {
-					user: calendar.user,
-					pass: calendar.pass
-				};
-			}
-
-			/*
-			 * tell helper to start a fetcher for this calendar
-			 * fetcher till cycle
-			 */
-			this.addCalendar(calendar.url, calendar.auth, calendarConfig);
-		});
-
-		// for backward compatibility titleReplace
-		if (typeof this.config.titleReplace !== "undefined") {
-			Log.warn("Deprecation warning: Please consider upgrading your calendar titleReplace configuration to customEvents.");
-			for (const [titlesearchstr, titlereplacestr] of Object.entries(this.config.titleReplace)) {
-				this.config.customEvents.push({ keyword: ".*", transform: { search: titlesearchstr, replace: titlereplacestr } });
-			}
-		}
-
 		this.selfUpdate();
 	},
 	notificationReceived (notification, payload, sender) {
-
+		console.log("notificationReceived", notification, payload, sender);
 		if (notification === "FETCH_CALENDAR") {
 			if (this.hasCalendarURL(payload.url)) {
 				this.sendSocketNotification(notification, { url: payload.url, id: this.identifier });
 			}
 		}
+
+		if (notification === "SET_TOKEN") {
+			this.token = payload.token;
+			const KEY = this.token;
+
+			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/`)
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log("Got calendar JSON", data);
+				this.calendars = data.map(calendar => {
+					return {
+						id: calendar.id,
+						calendar_id: calendar.calendar_id,
+						name: calendar.name,
+					};
+				});
+
+				// Get the events for each calendar
+				for (let i = 0; i < this.calendars.length; i++) {
+					const calendar = this.calendars[i];
+					console.log("Calendar:", calendar);
+					let query_encoded_calendar_id = encodeURIComponent(calendar.calendar_id);
+					// let start = "2024-05-01T00:00:00";
+					// let end = "2025-05-10T00:00:00";
+					let today = new Date();
+					let last_month = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+					let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
+					let start = last_month.toISOString().slice(0, 10);
+					let end = next_month.toISOString().slice(0, 10);
+					fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://localhost:8000/api/calendars/community/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${KEY}`
+						}
+					})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error(`HTTP error! Status: ${response.status}`);
+						}
+						return response.json();
+					})
+					.then(events => {
+						this.calendars[i].events = events;
+						this.updateDom();
+						if (this.config.broadcastEvents) {
+							this.broadcastEvents();
+						}
+					})
+					.catch(error => console.error("Error fetching calendar events:", error));
+				}
+			})
+			.catch(error => console.error("Error fetching calendar communities:", error));
+		}
 	},
 
 	// Override socket notification handler.
 	socketNotificationReceived (notification, payload) {
-
 		if (this.identifier !== payload.id) {
 			return;
 		}
@@ -615,37 +620,32 @@ Module.register("calendar", {
 			future = moment(now).startOf("day").add(this.config.maximumNumberOfDays, "days").toDate();
 		}
 		let events = [];
+		if (!this.calendars) {
+			return events;
+		}
 
-		for (const calendarUrl in this.calendarData) {
-			const calendar = this.calendarData[calendarUrl];
-			let remainingEntries = this.maximumEntriesForUrl(calendarUrl);
-			let maxPastDaysCompare = now - this.maximumPastDaysForUrl(calendarUrl) * ONE_DAY;
+		console.log("createEventList", this.calendars);
+		for (let calendar_index = 0; calendar_index < this.calendars.length; calendar_index++) {
+			const calendar = this.calendars[calendar_index];
 			let by_url_calevents = [];
-			for (const e in calendar) {
-				const event = JSON.parse(JSON.stringify(calendar[e])); // clone object
-
-				if (this.config.hidePrivate && event.class === "PRIVATE") {
-					// do not add the current event, skip it
+			console.log(`calendar ${calendar}`);
+			for (const e of calendar["events"]) {
+				const event = JSON.parse(JSON.stringify(e)); // clone object
+				const start = moment(event.start);
+				if (limitNumberOfEntries && start.isBefore(now)) {
+					console.log(event, "is before", now);
 					continue;
 				}
-				if (limitNumberOfEntries) {
-					if (event.endDate < maxPastDaysCompare) {
-						continue;
-					}
-					if (this.config.hideOngoing && event.startDate < now) {
-						continue;
-					}
-					if (this.config.hideDuplicates && this.listContainsEvent(events, event)) {
-						continue;
-					}
-				}
-
-				event.url = calendarUrl;
+				const end = moment(event.end);
+				console.log("starting on day", start.format("YYYY-MM-DD"), "ending on day", end.format("YYYY-MM-DD"));
+				event.startDate = start.valueOf();
+				event.endDate = end.valueOf();
 				event.today = event.startDate >= today && event.startDate < today + ONE_DAY;
 				event.dayBeforeYesterday = event.startDate >= today - ONE_DAY * 2 && event.startDate < today - ONE_DAY;
 				event.yesterday = event.startDate >= today - ONE_DAY && event.startDate < today;
 				event.tomorrow = !event.today && event.startDate >= today + ONE_DAY && event.startDate < today + 2 * ONE_DAY;
 				event.dayAfterTomorrow = !event.tomorrow && event.startDate >= today + ONE_DAY * 2 && event.startDate < today + 3 * ONE_DAY;
+				console.log("event", event);
 
 				/*
 				 * if sliceMultiDayEvents is set to true, multiday events (events exceeding at least one midnight) are sliced into days,
@@ -692,9 +692,8 @@ Module.register("calendar", {
 			by_url_calevents.sort(function (a, b) {
 				return a.startDate - b.startDate;
 			});
-			Log.debug(`pushing ${by_url_calevents.length} events to total with room for ${remainingEntries}`);
-			events = events.concat(by_url_calevents.slice(0, remainingEntries));
-			Log.debug(`events for calendar=${events.length}`);
+			events = events.concat(by_url_calevents);
+			console.log(`events for calendar`, events);
 		}
 		Log.info(`sorting events count=${events.length}`);
 		events.sort(function (a, b) {
@@ -747,30 +746,6 @@ Module.register("calendar", {
 			}
 		}
 		return false;
-	},
-
-	/**
-	 * Requests node helper to add calendar url.
-	 * @param {string} url The calendar url to add
-	 * @param {object} auth The authentication method and credentials
-	 * @param {object} calendarConfig The config of the specific calendar
-	 */
-	addCalendar (url, auth, calendarConfig) {
-		this.sendSocketNotification("ADD_CALENDAR", {
-			id: this.identifier,
-			url: url,
-			excludedEvents: calendarConfig.excludedEvents || this.config.excludedEvents,
-			maximumEntries: calendarConfig.maximumEntries || this.config.maximumEntries,
-			maximumNumberOfDays: calendarConfig.maximumNumberOfDays || this.config.maximumNumberOfDays,
-			pastDaysCount: calendarConfig.pastDaysCount || this.config.pastDaysCount,
-			fetchInterval: calendarConfig.fetchInterval || this.config.fetchInterval,
-			symbolClass: calendarConfig.symbolClass,
-			titleClass: calendarConfig.titleClass,
-			timeClass: calendarConfig.timeClass,
-			auth: auth,
-			broadcastPastEvents: calendarConfig.broadcastPastEvents || this.config.broadcastPastEvents,
-			selfSignedCert: calendarConfig.selfSignedCert || this.config.selfSignedCert
-		});
 	},
 
 	/**
@@ -924,12 +899,6 @@ Module.register("calendar", {
 	 */
 	broadcastEvents () {
 		const eventList = this.createEventList(false);
-		for (const event of eventList) {
-			event.symbol = this.symbolsForEvent(event);
-			event.calendarName = this.calendarNameForUrl(event.url);
-			event.color = this.colorForUrl(event.url, false);
-			delete event.url;
-		}
 
 		this.sendNotification("CALENDAR_EVENTS", eventList);
 	},
@@ -943,7 +912,7 @@ Module.register("calendar", {
 	 * (because updateDom is not set in CALENDAR_EVENTS for this case)
 	 */
 	selfUpdate () {
-		const ONE_MINUTE = 60 * 1000;
+		const ONE_MINUTE = 5 * 1000;
 		setTimeout(
 			() => {
 				setInterval(() => {

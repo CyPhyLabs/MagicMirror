@@ -62,6 +62,8 @@ Module.register("login", {
 		const thisModule = this;
 		window.onkeyup = function(e) {
 			if (e.key === "Enter") {
+				let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDM2MDA0LCJpYXQiOjE3NDU0MzI0MDQsImp0aSI6IjIyNDUzMDQyZTc4YzRlNzJiYWQ0ODc2Mzc5ZGQ2MGFkIiwidXNlcl9pZCI6ImE0MDUxMGUwLWNlYjYtNDk1Ny05OTc5LWQ1ZjIxZWMzMTRkZSJ9.comVMcl2N3iicor-Tf86ZaFHSXeNaZQDCVOdYr6GEl4";
+				thisModule.sendNotification("SET_TOKEN", { token });
 				thisModule.connceted();
 			}
 			if (e.key === "Tab") {
@@ -111,11 +113,11 @@ Module.register("login", {
 	},
 
 	socketNotificationReceived(notification, payload) {
-		console.log("notificationReceived", notification, payload);
 		if (notification === "CONNECTED") {
 		  this.ids = null;
 		  this.updateDom();
 		  this.connceted();
+		  this.sendNotification("SET_TOKEN", { token: payload.token });
 		}
 	  }
 });
