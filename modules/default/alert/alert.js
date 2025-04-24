@@ -6,7 +6,7 @@ Module.register("alert", {
 	defaults: {
 		effect: "slide", // scale|slide|genie|jelly|flip|bouncyflip|exploader
 		alert_effect: "jelly", // scale|slide|genie|jelly|flip|bouncyflip|exploader
-		display_time: 3500, // time a notification is displayed in seconds
+		display_time: 86400, // time a notification is displayed in seconds
 		position: "left",
 		welcome_message: false // shown at startup
 	},
