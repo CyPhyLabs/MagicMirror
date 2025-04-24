@@ -13,7 +13,7 @@ Module.register("login", {
 	async start () {
 		Log.info(`Starting module: ${this.name}`);
 		this.generateQrCode();
-		setInterval(() => this.generateQrCode(), 60000);
+		setInterval(() => this.generateQrCode(), 600000);
 	},
 
 	generateQrCode() {
