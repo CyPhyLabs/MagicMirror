@@ -158,7 +158,7 @@ Module.register("alert", {
 		//			"target_audience": "everyone"
 		//		}
 		// ]
-		fetch("http://localhost:8080/cors?url=http://localhost:8000/api/messages")
+		fetch("http://localhost:8080/cors?url=http://backend-dev-hosted.onrender.com/api/messages")
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(`HTTP error: ${response.status}`);
