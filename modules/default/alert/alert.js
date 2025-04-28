@@ -52,11 +52,15 @@ Module.register("alert", {
 	},
 
 	notificationReceived (notification, payload, sender) {
-		if (notification === "SHOW_ALERT") {
-			if (payload.type === "notification") {
-				this.showNotification(payload);
-			} else {
-				this.showAlert(payload, sender);
+		if (notification === "SET_TOKEN") {
+			this.token = payload.token;
+		} else if (notification === "SHOW_ALERT") {
+			if (this.token) {
+				if (payload.type === "notification") {
+					this.showNotification(payload);
+				} else {
+					this.showAlert(payload, sender);
+				}
 			}
 		} else if (notification === "HIDE_ALERT") {
 			this.hideAlert(sender);
@@ -64,7 +68,7 @@ Module.register("alert", {
 			// spawn a loop in the background that polls the backend for new messages
 			setInterval(() => {
 				this.pollMessages();
-			}, 1000);
+			}, 60000);
 		}
 	},
 

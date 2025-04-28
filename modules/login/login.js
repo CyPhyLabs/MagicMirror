@@ -78,6 +78,32 @@ Module.register("login", {
 		return qrCodeDiv
 	},
 
+	refreshToken() {
+		let refresh_token = this.refresh_token;
+		fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/token/refresh`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${KEY}`
+			},
+			body: JSON.stringify({
+				refresh: refresh_token,
+			}),
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then(data => {
+				this.sendNotification("SET_TOKEN", { token: data.access });
+			})
+			.catch(error => {
+				console.error('There was a problem with the fetch operation:', error);
+			});
+	},
+
 	showCalendar() {
 		this.sendNotification("SCREEN_CHANGE", 2);
 		MM.getModules().enumerate(function(module) {
@@ -117,7 +143,8 @@ Module.register("login", {
 		  this.ids = null;
 		  this.updateDom();
 		  this.connceted();
-		  this.sendNotification("SET_TOKEN", { token: payload.token });
+		  this.refresh_token = payload.token;
+		this.refreshToken();
 		}
 	  }
 });
