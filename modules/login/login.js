@@ -80,9 +80,10 @@ Module.register("login", {
 
 	refreshToken() {
 		let refresh_token = this.refresh_token;
-		fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/token/refresh`, {
+		fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=http://backend-dev-hosted.onrender.com/api/token/refresh`, {
 			method: "POST",
 			headers: {
+				"refresh": refresh_token,
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${KEY}`
 			},
