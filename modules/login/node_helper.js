@@ -3,6 +3,7 @@ const path           = require("path");
 const { app, safeStorage } = require("electron");
 const NodeHelper     = require("node_helper");
 const { init_ble }   = require("./wifi/init.js");
+const wifi = require("./wifi/wifi.js");
 
 function getCachePath() {
   // MagicMirror runs inside Electron, so app.getPath works here.
@@ -26,10 +27,10 @@ function readCachedToken() {
   }
 }
 
-function writeCachedToken(token) {
+function writeCachedToken(token, ssid, password) {
   try {
     if (!safeStorage.isEncryptionAvailable()) return; // nothing to do
-    const encrypted = safeStorage.encryptString(JSON.stringify({ token }));
+    const encrypted = safeStorage.encryptString(JSON.stringify({ token, ssid, password }));
     fs.writeFileSync(getCachePath(), encrypted);
   } catch (err) {
     console.warn("Token cache write failed:", err.message);
@@ -43,18 +44,19 @@ module.exports = NodeHelper.create({
     const cachedData = readCachedToken();
     if (cachedData) {
       let { ssid, password, token } = cachedData;
+      console.log("Token cache hit:", cachedData);
+      if (token && password && ssid) {
       wifi.connect(ssid, password, () => {
-        callback(this.RESULT_SUCCESS);
+        this.sendSocketNotification("CONNECTED", { token });
       });
-        console.log("Token cache hit:", cachedData);
-      this.sendSocketNotification("CONNECTED", { token });
       return;
+    }
     }
 
     const { id, password } = payload;
-    init_ble(id, String(password), (freshToken) => {
+    init_ble(id, String(password), (freshToken, ssid, password) => {
         console.log("Token cache miss:", freshToken);
-      writeCachedToken(freshToken);
+      writeCachedToken(freshToken, ssid, password);
       this.sendSocketNotification("CONNECTED", { token: freshToken });
     });
   },

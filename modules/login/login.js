@@ -97,6 +97,7 @@ Module.register("login", {
 				return response.json();
 			})
 			.then(data => {
+				console.log('Success with token:', data);
 				this.sendNotification("SET_TOKEN", { token: data.access });
 			})
 			.catch(error => {
@@ -144,7 +145,7 @@ Module.register("login", {
 		  this.updateDom();
 		  this.connceted();
 		  this.refresh_token = payload.token;
-		this.refreshToken();
+		  this.refreshToken();
 		}
 	  }
 });
