@@ -77,7 +77,8 @@ function Server (config) {
 				app.use(directory, express.static(path.resolve(global.root_path + directory)));
 			}
 
-			app.get("/cors", async (req, res) => await cors(req, res));
+			app.use(express.json())
+			app.use("/cors", async (req, res) => await cors(req, res));
 
 			app.get("/version", (req, res) => getVersion(req, res));
 

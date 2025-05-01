@@ -881,7 +881,7 @@ Module.register("calendar", {
 			return;
 		}
 
-			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/calendars/community/`)
+			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=https://backend-dev-hosted.onrender.com/api/calendars/community/`)
 				.then(response => {
 					if (!response.ok) {
 						throw new Error(`HTTP error! Status: ${response.status}`);
@@ -910,7 +910,7 @@ Module.register("calendar", {
 						let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
 						let start = last_month.toISOString().slice(0, 10);
 						let end = next_month.toISOString().slice(0, 10);
-						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/calendars/community/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
+						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=https://backend-dev-hosted.onrender.com/api/calendars/community/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
 							method: "GET",
 							headers: {
 								"Content-Type": "application/json",
@@ -934,7 +934,7 @@ Module.register("calendar", {
 					}
 				})
 				.catch(error => console.error("Error fetching calendar communities:", error));
-			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/calendars/personal/`)
+			fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=https://backend-dev-hosted.onrender.com/api/calendars/personal/`)
 				.then(response => {
 					if (!response.ok) {
 						throw new Error(`HTTP error! Status: ${response.status}`);
@@ -963,7 +963,7 @@ Module.register("calendar", {
 						let next_month = new Date(today.getFullYear(), today.getMonth() + 6, 1);
 						let start = last_month.toISOString().slice(0, 10);
 						let end = next_month.toISOString().slice(0, 10);
-						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer ${KEY}&url=http://backend-dev-hosted.onrender.com/api/calendars/personal/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
+						fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=https://backend-dev-hosted.onrender.com/api/calendars/personal/events/?calendar_id=${query_encoded_calendar_id}&start=${start}&end=${end}`, {
 							method: "GET",
 							headers: {
 								"Content-Type": "application/json",

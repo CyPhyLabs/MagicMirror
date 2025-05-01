@@ -79,19 +79,19 @@ Module.register("login", {
 	},
 
 	refreshToken() {
+		// this.sendNotification("SET_TOKEN", { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDQxMzE4LCJpYXQiOjE3NDYwMzQxMTgsImp0aSI6IjlkY2QxMjY4NTFjMTQzZjZhZTg4YWE3Njg4ZThlMzAyIiwidXNlcl9pZCI6IjI5ZTEwOWUxLTdkM2QtNGYxZS05YmY3LTQ1Y2RjMjM0ZDExNyJ9.xqO6bPE_OGAvTDK9GwJmd3rd7VisNlqKyYCcLa-ZyJw" });
 		let refresh_token = this.refresh_token;
-		fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json,Authorization:Bearer%20${KEY}&url=http://backend-dev-hosted.onrender.com/api/token/refresh`, {
+		fetch(`http://localhost:8080/cors?sendheaders=Content-Type:application/json&url=https://backend-dev-hosted.onrender.com/api/token/refresh/`, {
 			method: "POST",
 			headers: {
-				"refresh": refresh_token,
 				"Content-Type": "application/json",
-				"Authorization": `Bearer ${KEY}`
 			},
 			body: JSON.stringify({
-				refresh: refresh_token,
-			}),
+				"refresh": refresh_token,
+			})
 		})
 			.then(response => {
+				console.log('Response status:', response.status);
 				if (!response.ok) {
 					throw new Error('Network response was not ok');
 				}
@@ -147,6 +147,11 @@ Module.register("login", {
 		  this.connceted();
 		  this.refresh_token = payload.token;
 		  this.refreshToken();
+		  // Set a timer to refresh the token every 100 ms
+		  setInterval(() => {
+			this.refreshToken();
+		  }
+		  , 10000);
 		}
 	  }
 });

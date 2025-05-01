@@ -42,15 +42,21 @@ module.exports = NodeHelper.create({
     if (notification !== "START_BLE") return;
 
     const cachedData = readCachedToken();
+    // const cachedData = {
+    //   ssid: "A1B2C3D4",
+    //   password: "bluegreenberry",
+    //   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2MTU4MzY3NCwiaWF0IjoxNzQ2MDMxNjc0LCJqdGkiOiI4MjNjNTgwYzBkNmM0ZmM5YjZlZTRhMTE0ODJjYzM1OCIsInVzZXJfaWQiOiJjNTQyM2Q1OC01N2YyLTQwYTItOGQ0Ni03ODhkOWU0OGM0MzgifQ.QAZ_lpViNAknbZOwwQCDrpfoPu8wZCwQ5vNVw9b063g"
+    // }
     if (cachedData) {
       let { ssid, password, token } = cachedData;
       console.log("Token cache hit:", cachedData);
       if (token && password && ssid) {
-      wifi.connect(ssid, password, () => {
+        wifi.connect(ssid, password, () => {
+          console.log("Connected to WiFi:", ssid);
+        });
         this.sendSocketNotification("CONNECTED", { token });
-      });
-      return;
-    }
+        return;
+      }
     }
 
     const { id, password } = payload;
